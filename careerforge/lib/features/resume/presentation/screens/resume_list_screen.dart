@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/app_routes.dart';
+import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/empty_state_widget.dart';
 import '../../../../core/widgets/loading_shimmer.dart';
 import '../../providers/resume_provider.dart';
@@ -13,14 +14,26 @@ class ResumeListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        title: const Text(AppStrings.myResumes),
+        backgroundColor: Colors.transparent,
+        title: const Text(
+          AppStrings.myResumes,
+          style: TextStyle(fontWeight: FontWeight.w900),
+        ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () {
-              Navigator.pushNamed(context, AppRoutes.resumeBuilder);
-            },
+          Container(
+            margin: const EdgeInsets.only(right: 8),
+            decoration: BoxDecoration(
+              color: AppColors.primary.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+            ),
+            child: IconButton(
+              icon: const Icon(Icons.add_rounded, color: AppColors.primary),
+              onPressed: () {
+                Navigator.pushNamed(context, AppRoutes.resumeBuilder);
+              },
+            ),
           ),
         ],
       ),
@@ -33,8 +46,8 @@ class ResumeListScreen extends StatelessWidget {
           if (provider.resumes.isEmpty) {
             return EmptyStateWidget(
               message: 'No resumes found',
-              subMessage: 'Create your first resume to start applying to jobs.',
-              icon: Icons.file_copy_outlined,
+              subMessage: 'Create your first professional resume to stand out and land your dream job.',
+              icon: Icons.description_outlined,
               buttonLabel: AppStrings.createResume,
               onButtonPressed: () {
                 Navigator.pushNamed(context, AppRoutes.resumeBuilder);
@@ -43,7 +56,7 @@ class ResumeListScreen extends StatelessWidget {
           }
 
           return ListView.builder(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
             itemCount: provider.resumes.length,
             itemBuilder: (context, index) {
               return ResumeCard(resume: provider.resumes[index]);
@@ -51,12 +64,17 @@ class ResumeListScreen extends StatelessWidget {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         heroTag: 'resume_list_fab',
         onPressed: () {
           Navigator.pushNamed(context, AppRoutes.resumeBuilder);
         },
-        child: const Icon(Icons.add),
+        backgroundColor: AppColors.primary,
+        foregroundColor: Colors.white,
+        icon: const Icon(Icons.add_rounded),
+        label: const Text('Create New', style: TextStyle(fontWeight: FontWeight.w700)),
+        elevation: 4,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
     );
   }

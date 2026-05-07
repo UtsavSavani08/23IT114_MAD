@@ -117,10 +117,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Consumer<DashboardProvider>(
       builder: (context, provider, child) {
         return SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 24.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              _buildGreeting(),
+              const SizedBox(height: 24),
               Row(
                 children: [
                   Expanded(
@@ -164,27 +166,80 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 32),
-              const Text(
-                'Status Distribution',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 16),
-              SizedBox(
-                height: 250,
+              const SizedBox(height: 40),
+              _buildSectionHeader('Status Distribution'),
+              const SizedBox(height: 24),
+              Container(
+                height: 320,
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).cardTheme.color,
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.02),
+                      blurRadius: 20,
+                      offset: const Offset(0, 10),
+                    ),
+                  ],
+                ),
                 child: StatusChart(distribution: provider.statusDistribution),
               ),
-              const SizedBox(height: 32),
-              const Text(
-                AppStrings.recentApplications,
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
+              const SizedBox(height: 40),
+              _buildSectionHeader(AppStrings.recentApplications, showViewAll: true),
               const SizedBox(height: 16),
               RecentApplicationsList(applications: provider.recentApplications),
+              const SizedBox(height: 100), // Padding for FAB
             ],
           ),
         );
       },
+    );
+  }
+
+  Widget _buildGreeting() {
+    return const Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Hello There! 👋',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: AppColors.textSecondary,
+          ),
+        ),
+        SizedBox(height: 4),
+        Text(
+          'Track your career journey',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.w800,
+            letterSpacing: -0.5,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSectionHeader(String title, {bool showViewAll = false}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w800,
+            letterSpacing: -0.5,
+          ),
+        ),
+        if (showViewAll)
+          TextButton(
+            onPressed: () => setState(() => _currentIndex = 2),
+            child: const Text('View All'),
+          ),
+      ],
     );
   }
 }

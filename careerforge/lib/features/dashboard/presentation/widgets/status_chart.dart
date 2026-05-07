@@ -56,13 +56,11 @@ class StatusChart extends StatelessWidget {
       return PieChartSectionData(
         color: _getColor(entry.key),
         value: entry.value.toDouble(),
-        title: '${entry.value}',
-        radius: 50,
-        titleStyle: const TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-        ),
+        title: '', // Remove title from section for cleaner look
+        radius: 60,
+        badgeWidget: _buildBadge(entry.value),
+        badgePositionPercentageOffset: 1.1,
+        showTitle: false,
       );
     }).toList();
 
@@ -72,54 +70,131 @@ class StatusChart extends StatelessWidget {
           child: Stack(
             alignment: Alignment.center,
             children: [
+              Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primary.withValues(alpha: 0.05),
+                      blurRadius: 30,
+                      spreadRadius: 5,
+                    ),
+                  ],
+                ),
+              ),
               PieChart(
                 PieChartData(
-                  sectionsSpace: 2,
-                  centerSpaceRadius: 40,
+                  sectionsSpace: 4,
+                  centerSpaceRadius: 50,
                   sections: sections,
+                  borderData: FlBorderData(show: false),
                 ),
-                swapAnimationDuration: const Duration(milliseconds: 600),
+                swapAnimationDuration: const Duration(milliseconds: 800),
+                swapAnimationCurve: Curves.easeInOutBack,
               ),
-              Text(
-                '$total\nTotal',
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    '$total',
+                    style: const TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: -1,
+                    ),
+                  ),
+                  const Text(
+                    'TOTAL',
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.textHint,
+                      letterSpacing: 1.5,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 32),
         Wrap(
-          spacing: 16,
-          runSpacing: 8,
+          spacing: 12,
+          runSpacing: 12,
           alignment: WrapAlignment.center,
           children: distribution.entries
               .where((entry) => entry.value > 0)
-              .map((entry) {
-            return Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 12,
-                  height: 12,
-                  decoration: BoxDecoration(
-                    color: _getColor(entry.key),
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  '${_getLabel(entry.key)} (${entry.value})',
-                  style: const TextStyle(fontSize: 12),
-                ),
-              ],
-            );
-          }).toList(),
+              .map((entry) => _buildLegendItem(entry.key, entry.value))
+              .toList(),
         ),
       ],
+    );
+  }
+
+  Widget _buildBadge(int value) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Text(
+        '$value',
+        style: const TextStyle(
+          fontSize: 10,
+          fontWeight: FontWeight.bold,
+          color: AppColors.textPrimary,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLegendItem(ApplicationStatus status, int count) {
+    final color = _getColor(status);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withValues(alpha: 0.1)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 8,
+            height: 8,
+            decoration: BoxDecoration(
+              color: color,
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            _getLabel(status),
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(width: 4),
+          Text(
+            '($count)',
+            style: const TextStyle(
+              fontSize: 11,
+              color: AppColors.textHint,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -31,32 +31,52 @@ class _SearchFilterScreenState extends State<SearchFilterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        title: TextField(
-          controller: _searchController,
-          autofocus: true,
-          decoration: InputDecoration(
-            hintText: 'Search company or role...',
-            border: InputBorder.none,
-            enabledBorder: InputBorder.none,
-            focusedBorder: InputBorder.none,
-            fillColor: Colors.transparent,
-            filled: false,
-            prefixIcon: const Icon(Icons.search),
-            suffixIcon: _searchController.text.isNotEmpty
-                ? IconButton(
-                    icon: const Icon(Icons.clear),
-                    onPressed: () {
-                      _searchController.clear();
-                      context.read<ApplicationProvider>().searchApplications('');
-                    },
-                  )
-                : null,
+        backgroundColor: Colors.transparent,
+        title: Container(
+          height: 48,
+          decoration: BoxDecoration(
+            color: Theme.of(context).cardTheme.color,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppColors.border.withValues(alpha: 0.5)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.02),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
-          onChanged: (val) {
-            context.read<ApplicationProvider>().searchApplications(val);
-            setState(() {});
-          },
+          child: TextField(
+            controller: _searchController,
+            autofocus: true,
+            textAlignVertical: TextAlignVertical.center,
+            decoration: InputDecoration(
+              hintText: 'Search company or role...',
+              border: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              focusedBorder: InputBorder.none,
+              fillColor: Colors.transparent,
+              filled: false,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+              prefixIcon: const Icon(Icons.search_rounded, color: AppColors.primary),
+              suffixIcon: _searchController.text.isNotEmpty
+                  ? IconButton(
+                      icon: const Icon(Icons.clear_rounded, size: 20),
+                      onPressed: () {
+                        _searchController.clear();
+                        context.read<ApplicationProvider>().searchApplications('');
+                        setState(() {});
+                      },
+                    )
+                  : null,
+            ),
+            onChanged: (val) {
+              context.read<ApplicationProvider>().searchApplications(val);
+              setState(() {});
+            },
+          ),
         ),
       ),
       body: Consumer<ApplicationProvider>(
@@ -66,21 +86,36 @@ class _SearchFilterScreenState extends State<SearchFilterScreen> {
                              provider.searchQuery.isNotEmpty;
 
           return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const SizedBox(height: 8),
               _buildFilterChips(context, provider),
               if (hasFilters)
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
                   child: Row(
                     children: [
                       const Text(
                         'Active Filters',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: -0.2,
+                        ),
                       ),
                       const Spacer(),
                       TextButton(
                         onPressed: provider.clearFilters,
-                        child: const Text('Clear All'),
+                        style: TextButton.styleFrom(
+                          foregroundColor: AppColors.error,
+                          padding: EdgeInsets.zero,
+                          minimumSize: const Size(0, 0),
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        child: const Text(
+                          'Clear All',
+                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
+                        ),
                       ),
                     ],
                   ),
@@ -89,10 +124,10 @@ class _SearchFilterScreenState extends State<SearchFilterScreen> {
                 child: provider.filteredApplications.isEmpty
                     ? const EmptyStateWidget(
                         message: 'No results found',
-                        icon: Icons.search_off,
+                        icon: Icons.search_off_rounded,
                       )
                     : ListView.builder(
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(20),
                         itemCount: provider.filteredApplications.length,
                         itemBuilder: (context, index) {
                           return ApplicationCard(
@@ -111,19 +146,30 @@ class _SearchFilterScreenState extends State<SearchFilterScreen> {
   Widget _buildFilterChips(BuildContext context, ApplicationProvider provider) {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       child: Row(
         children: [
-          ActionChip(
-            label: const Text('Date Range'),
-            avatar: const Icon(Icons.calendar_today, size: 16),
-            backgroundColor: provider.activeDateFilter != null ? AppColors.primary.withValues(alpha: 0.2) : null,
+          _buildActionChip(
+            label: 'Date Range',
+            icon: Icons.calendar_today_rounded,
+            isSelected: provider.activeDateFilter != null,
             onPressed: () async {
               final range = await showDateRangePicker(
                 context: context,
                 firstDate: DateTime(2020),
                 lastDate: DateTime.now().add(const Duration(days: 365)),
                 initialDateRange: provider.activeDateFilter,
+                builder: (context, child) {
+                  return Theme(
+                    data: Theme.of(context).copyWith(
+                      colorScheme: Theme.of(context).colorScheme.copyWith(
+                        primary: AppColors.primary,
+                        onPrimary: Colors.white,
+                      ),
+                    ),
+                    child: child!,
+                  );
+                },
               );
               if (range != null) {
                 provider.filterByDateRange(range);
@@ -142,6 +188,30 @@ class _SearchFilterScreenState extends State<SearchFilterScreen> {
     );
   }
 
+  Widget _buildActionChip({
+    required String label,
+    required IconData icon,
+    required bool isSelected,
+    required VoidCallback onPressed,
+  }) {
+    return ActionChip(
+      label: Text(label),
+      avatar: Icon(icon, size: 14, color: isSelected ? AppColors.primary : AppColors.textSecondary),
+      backgroundColor: isSelected ? AppColors.primary.withValues(alpha: 0.1) : Theme.of(context).cardTheme.color,
+      side: BorderSide(
+        color: isSelected ? AppColors.primary : AppColors.border.withValues(alpha: 0.5),
+        width: 1,
+      ),
+      labelStyle: TextStyle(
+        color: isSelected ? AppColors.primary : AppColors.textPrimary,
+        fontWeight: isSelected ? FontWeight.w800 : FontWeight.w500,
+        fontSize: 12,
+      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      onPressed: onPressed,
+    );
+  }
+
   Widget _buildStatusChip(BuildContext context, ApplicationProvider provider, ApplicationStatus? status, String label) {
     final isSelected = provider.activeStatusFilter == status;
     return Padding(
@@ -149,6 +219,19 @@ class _SearchFilterScreenState extends State<SearchFilterScreen> {
       child: ChoiceChip(
         label: Text(label),
         selected: isSelected,
+        selectedColor: AppColors.primary.withValues(alpha: 0.1),
+        backgroundColor: Theme.of(context).cardTheme.color,
+        side: BorderSide(
+          color: isSelected ? AppColors.primary : AppColors.border.withValues(alpha: 0.5),
+          width: 1,
+        ),
+        labelStyle: TextStyle(
+          color: isSelected ? AppColors.primary : AppColors.textPrimary,
+          fontWeight: isSelected ? FontWeight.w800 : FontWeight.w500,
+          fontSize: 12,
+        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        showCheckmark: false,
         onSelected: (selected) {
           if (selected) {
             provider.filterByStatus(status);

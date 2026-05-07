@@ -36,10 +36,20 @@ class ResumeCard extends StatelessWidget {
             ),
           ],
         ),
-        child: Card(
-          margin: EdgeInsets.zero,
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(24),
+            color: Theme.of(context).cardTheme.color,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.03),
+                blurRadius: 15,
+                offset: const Offset(0, 5),
+              ),
+            ],
+          ),
           child: InkWell(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(24),
             onTap: () {
               Navigator.pushNamed(
                 context,
@@ -51,7 +61,7 @@ class ResumeCard extends StatelessWidget {
               _showOptionsBottomSheet(context);
             },
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(20.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -63,35 +73,51 @@ class ResumeCard extends StatelessWidget {
                           resume.profileName,
                           style: const TextStyle(
                             fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: -0.5,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      Text(
-                        DateFormatter.formatRelative(resume.updatedAt),
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: AppColors.textHint,
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary.withValues(alpha: 0.05),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(
+                          DateFormatter.formatRelative(resume.updatedAt),
+                          style: const TextStyle(
+                            fontSize: 11,
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 6),
                   Text(
                     resume.fullName,
                     style: const TextStyle(
                       fontSize: 14,
                       color: AppColors.textSecondary,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 20),
                   Row(
                     children: [
-                      _buildBadge(Icons.star, '${resume.skills.length} Skills'),
-                      const SizedBox(width: 8),
-                      _buildBadge(Icons.school, '${resume.education.length} Edu'),
+                      _buildEnhancedBadge(Icons.auto_awesome_rounded, '${resume.skills.length} Skills', AppColors.primary),
+                      const SizedBox(width: 12),
+                      _buildEnhancedBadge(Icons.school_rounded, '${resume.education.length} Edu', AppColors.secondary),
+                      const Spacer(),
+                      const Icon(
+                        Icons.arrow_forward_ios_rounded,
+                        size: 14,
+                        color: AppColors.textHint,
+                      ),
                     ],
                   ),
                 ],
@@ -103,24 +129,25 @@ class ResumeCard extends StatelessWidget {
     );
   }
 
-  Widget _buildBadge(IconData icon, String label) {
+  Widget _buildEnhancedBadge(IconData icon, String label, Color color) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: AppColors.primary.withValues(alpha: 0.1),
+        color: color.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withValues(alpha: 0.1), width: 1),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 12, color: AppColors.primary),
-          const SizedBox(width: 4),
+          Icon(icon, size: 14, color: color),
+          const SizedBox(width: 6),
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12,
-              color: AppColors.primary,
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.w700,
+              color: color,
             ),
           ),
         ],

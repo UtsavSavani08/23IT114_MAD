@@ -37,10 +37,20 @@ class ApplicationCard extends StatelessWidget {
             ),
           ],
         ),
-        child: Card(
-          margin: EdgeInsets.zero,
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            color: Theme.of(context).cardTheme.color,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.03),
+                blurRadius: 15,
+                offset: const Offset(0, 5),
+              ),
+            ],
+          ),
           child: InkWell(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(20),
             onTap: () {
               Navigator.pushNamed(
                 context,
@@ -61,18 +71,20 @@ class ApplicationCard extends StatelessWidget {
                         Text(
                           application.jobRole,
                           style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                            fontSize: 17,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: -0.3,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: 2),
                         Text(
                           application.companyName,
                           style: const TextStyle(
                             fontSize: 14,
                             color: AppColors.textSecondary,
+                            fontWeight: FontWeight.w500,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -80,17 +92,29 @@ class ApplicationCard extends StatelessWidget {
                         const SizedBox(height: 8),
                         Row(
                           children: [
-                            const Icon(
-                              Icons.calendar_today,
-                              size: 12,
-                              color: AppColors.textHint,
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              DateFormatter.formatRelative(application.dateApplied),
-                              style: const TextStyle(
-                                fontSize: 12,
-                                color: AppColors.textHint,
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: AppColors.primary.withValues(alpha: 0.05),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.calendar_today_outlined,
+                                    size: 10,
+                                    color: AppColors.primary,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    DateFormatter.formatRelative(application.dateApplied),
+                                    style: const TextStyle(
+                                      fontSize: 11,
+                                      color: AppColors.primary,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ],
@@ -99,7 +123,18 @@ class ApplicationCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  StatusBadge(status: application.status),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      StatusBadge(status: application.status),
+                      const SizedBox(height: 8),
+                      const Icon(
+                        Icons.chevron_right_rounded,
+                        color: AppColors.textHint,
+                        size: 20,
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -110,19 +145,32 @@ class ApplicationCard extends StatelessWidget {
   }
 
   Widget _buildCompanyAvatar() {
-    final initials = application.companyName.isNotEmpty
-        ? application.companyName.substring(0, 1).toUpperCase()
-        : '?';
-    
-    return CircleAvatar(
-      radius: 24,
-      backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-      child: Text(
-        initials,
-        style: const TextStyle(
-          color: AppColors.primary,
-          fontWeight: FontWeight.bold,
-          fontSize: 20,
+    return Container(
+      width: 56,
+      height: 56,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            AppColors.primary.withValues(alpha: 0.1),
+            AppColors.primary.withValues(alpha: 0.05),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: AppColors.primary.withValues(alpha: 0.1),
+          width: 1,
+        ),
+      ),
+      child: Center(
+        child: Text(
+          application.companyName.isNotEmpty ? application.companyName[0].toUpperCase() : '?',
+          style: const TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.w800,
+            color: AppColors.primary,
+          ),
         ),
       ),
     );

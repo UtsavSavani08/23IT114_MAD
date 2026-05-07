@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../core/utils/validators.dart';
 import '../../../../core/utils/date_formatter.dart';
+import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/custom_text_field.dart';
 import '../../../../core/widgets/custom_button.dart';
 import '../../data/models/application_model.dart';
@@ -88,33 +89,45 @@ class _ApplicationEntryScreenState extends State<ApplicationEntryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        title: Text(isEdit ? 'Edit Application' : 'New Application'),
+        backgroundColor: Colors.transparent,
+        title: Text(
+          isEdit ? 'Edit Application' : 'New Application',
+          style: const TextStyle(fontWeight: FontWeight.w900),
+        ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              _buildSectionHeader('Company & Role'),
+              const SizedBox(height: 16),
               CustomTextField(
                 label: 'Company Name',
                 controller: _companyController,
+                prefixIcon: const Icon(Icons.business_rounded, color: AppColors.primary),
                 validator: (val) => Validators.validateRequired(val, 'Field'),
               ),
               const SizedBox(height: 16),
               CustomTextField(
                 label: 'Job Role',
                 controller: _roleController,
+                prefixIcon: const Icon(Icons.work_rounded, color: AppColors.primary),
                 validator: (val) => Validators.validateRequired(val, 'Company Name'),
               ),
+              const SizedBox(height: 32),
+              _buildSectionHeader('Details'),
               const SizedBox(height: 16),
               _buildResumeDropdown(),
               const SizedBox(height: 16),
               CustomTextField(
                 label: 'Job Post URL (Optional)',
                 controller: _urlController,
+                prefixIcon: const Icon(Icons.link_rounded, color: AppColors.primary),
                 validator: (val) {
                   if (val != null && val.isNotEmpty) {
                     return Validators.validateUrl(val);
@@ -130,15 +143,29 @@ class _ApplicationEntryScreenState extends State<ApplicationEntryScreen> {
                 label: 'Notes (Optional)',
                 controller: _notesController,
                 maxLines: 4,
+                prefixIcon: const Icon(Icons.notes_rounded, color: AppColors.primary),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 40),
               CustomButton(
-                label: 'Save',
+                label: isEdit ? 'Update Application' : 'Save Application',
                 onPressed: _saveApplication,
               ),
+              const SizedBox(height: 40),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildSectionHeader(String title) {
+    return Text(
+      title,
+      style: const TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.w800,
+        color: AppColors.textPrimary,
+        letterSpacing: -0.2,
       ),
     );
   }
@@ -153,12 +180,24 @@ class _ApplicationEntryScreenState extends State<ApplicationEntryScreen> {
 
     return DropdownButtonFormField<String>(
       value: _selectedResumeId,
+      icon: const Icon(Icons.keyboard_arrow_down_rounded, color: AppColors.primary),
       decoration: InputDecoration(
         labelText: 'Resume Used',
+        prefixIcon: const Icon(Icons.description_rounded, color: AppColors.primary),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: AppColors.border.withValues(alpha: 0.5)),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: AppColors.border.withValues(alpha: 0.5)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: AppColors.primary, width: 2),
         ),
         filled: true,
+        fillColor: Theme.of(context).cardTheme.color,
       ),
       items: resumes.map((resume) {
         return DropdownMenuItem<String>(
@@ -188,6 +227,17 @@ class _ApplicationEntryScreenState extends State<ApplicationEntryScreen> {
           initialDate: _dateApplied,
           firstDate: DateTime(2020),
           lastDate: DateTime.now().add(const Duration(days: 365)),
+          builder: (context, child) {
+            return Theme(
+              data: Theme.of(context).copyWith(
+                colorScheme: Theme.of(context).colorScheme.copyWith(
+                  primary: AppColors.primary,
+                  onPrimary: Colors.white,
+                ),
+              ),
+              child: child!,
+            );
+          },
         );
         if (date != null) {
           setState(() {
@@ -198,16 +248,25 @@ class _ApplicationEntryScreenState extends State<ApplicationEntryScreen> {
       child: InputDecorator(
         decoration: InputDecoration(
           labelText: 'Date Applied',
+          prefixIcon: const Icon(Icons.calendar_today_rounded, color: AppColors.primary),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide(color: AppColors.border.withValues(alpha: 0.5)),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide(color: AppColors.border.withValues(alpha: 0.5)),
           ),
           filled: true,
+          fillColor: Theme.of(context).cardTheme.color,
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(DateFormatter.formatDate(_dateApplied)),
-            const Icon(Icons.calendar_today),
+            Text(
+              DateFormatter.formatDate(_dateApplied),
+              style: const TextStyle(fontWeight: FontWeight.w500),
+            ),
           ],
         ),
       ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/utils/id_generator.dart';
+import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets/custom_text_field.dart';
 import '../../../../core/widgets/custom_button.dart';
@@ -102,18 +103,24 @@ class _ResumeBuilderScreenState extends State<ResumeBuilderScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        title: Text(isEdit ? 'Edit Resume' : 'Build Resume'),
+        backgroundColor: Colors.transparent,
+        title: Text(
+          isEdit ? 'Edit Resume' : 'Build Resume',
+          style: const TextStyle(fontWeight: FontWeight.w900),
+        ),
         actions: [
           TextButton(
             onPressed: _saveResume,
-            child: const Text('Save', style: TextStyle(color: Colors.white)),
+            child: const Text('Save', style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w800)),
           ),
         ],
       ),
       body: Stepper(
         type: StepperType.horizontal,
         currentStep: _currentStep,
+        elevation: 0,
         onStepTapped: (step) => setState(() => _currentStep = step),
         onStepContinue: () {
           if (_currentStep < 3) {
@@ -129,12 +136,12 @@ class _ResumeBuilderScreenState extends State<ResumeBuilderScreen> {
         },
         controlsBuilder: (context, details) {
           return Padding(
-            padding: const EdgeInsets.only(top: 32.0),
+            padding: const EdgeInsets.only(top: 40.0, bottom: 20),
             child: Row(
               children: [
                 Expanded(
                   child: CustomButton(
-                    label: _currentStep == 3 ? 'Save Resume' : 'Continue',
+                    label: _currentStep == 3 ? 'Finish & Save' : 'Next Step',
                     onPressed: details.onStepContinue!,
                   ),
                 ),
@@ -142,7 +149,7 @@ class _ResumeBuilderScreenState extends State<ResumeBuilderScreen> {
                   const SizedBox(width: 16),
                   Expanded(
                     child: CustomButton(
-                      label: 'Back',
+                      label: 'Previous',
                       isOutlined: true,
                       onPressed: details.onStepCancel!,
                     ),
@@ -154,13 +161,13 @@ class _ResumeBuilderScreenState extends State<ResumeBuilderScreen> {
         },
         steps: [
           Step(
-            title: const Text('Basic Info'),
+            title: const Text('Basic', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700)),
             content: _buildBasicInfo(),
             isActive: _currentStep >= 0,
             state: _currentStep > 0 ? StepState.complete : StepState.indexed,
           ),
           Step(
-            title: const Text('Experience'),
+            title: const Text('Work', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700)),
             content: ExperienceForm(
               experiences: _experiences,
               onChanged: (exp) => setState(() => _experiences = exp),
@@ -169,7 +176,7 @@ class _ResumeBuilderScreenState extends State<ResumeBuilderScreen> {
             state: _currentStep > 1 ? StepState.complete : StepState.indexed,
           ),
           Step(
-            title: const Text('Education'),
+            title: const Text('Education', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700)),
             content: EducationForm(
               education: _education,
               onChanged: (edu) => setState(() => _education = edu),
@@ -178,7 +185,7 @@ class _ResumeBuilderScreenState extends State<ResumeBuilderScreen> {
             state: _currentStep > 2 ? StepState.complete : StepState.indexed,
           ),
           Step(
-            title: const Text('Skills'),
+            title: const Text('Skills', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700)),
             content: SkillsInput(
               skills: _skills,
               onChanged: (skills) => setState(() => _skills = skills),
@@ -195,29 +202,38 @@ class _ResumeBuilderScreenState extends State<ResumeBuilderScreen> {
     return Form(
       key: _basicInfoFormKey,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          _buildSectionTitle('Profile Identity'),
+          const SizedBox(height: 16),
           CustomTextField(
-            label: 'Profile Name (e.g. Frontend Dev CV)',
+            label: 'Profile Name (e.g. Senior Backend CV)',
             controller: _profileNameController,
+            prefixIcon: const Icon(Icons.badge_rounded, color: AppColors.primary),
             validator: (val) => Validators.validateRequired(val, 'Field'),
           ),
+          const SizedBox(height: 32),
+          _buildSectionTitle('Personal Details'),
           const SizedBox(height: 16),
           CustomTextField(
             label: 'Full Name',
             controller: _fullNameController,
+            prefixIcon: const Icon(Icons.person_rounded, color: AppColors.primary),
             validator: (val) => Validators.validateRequired(val, 'Field'),
           ),
           const SizedBox(height: 16),
           CustomTextField(
-            label: 'Email',
+            label: 'Email Address',
             controller: _emailController,
+            prefixIcon: const Icon(Icons.email_rounded, color: AppColors.primary),
             validator: Validators.validateEmail,
             keyboardType: TextInputType.emailAddress,
           ),
           const SizedBox(height: 16),
           CustomTextField(
-            label: 'Phone',
+            label: 'Phone Number',
             controller: _phoneController,
+            prefixIcon: const Icon(Icons.phone_rounded, color: AppColors.primary),
             validator: Validators.validatePhone,
             keyboardType: TextInputType.phone,
           ),
@@ -225,14 +241,28 @@ class _ResumeBuilderScreenState extends State<ResumeBuilderScreen> {
           CustomTextField(
             label: 'Address (Optional)',
             controller: _addressController,
+            prefixIcon: const Icon(Icons.location_on_rounded, color: AppColors.primary),
           ),
           const SizedBox(height: 16),
           CustomTextField(
             label: 'Professional Summary',
             controller: _summaryController,
             maxLines: 5,
+            prefixIcon: const Icon(Icons.article_rounded, color: AppColors.primary),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Text(
+      title,
+      style: const TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.w800,
+        color: AppColors.textPrimary,
+        letterSpacing: 0.5,
       ),
     );
   }
