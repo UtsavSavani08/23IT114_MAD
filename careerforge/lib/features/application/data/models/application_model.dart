@@ -1,6 +1,6 @@
 import 'package:hive/hive.dart';
 
-// part 'application_model.g.dart';
+part 'application_model.g.dart';
 
 @HiveType(typeId: 4)
 enum ApplicationStatus {
