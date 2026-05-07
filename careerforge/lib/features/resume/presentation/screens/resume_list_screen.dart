@@ -52,6 +52,7 @@ class ResumeListScreen extends StatelessWidget {
         },
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'resume_list_fab',
         onPressed: () {
           Navigator.pushNamed(context, AppRoutes.resumeBuilder);
         },

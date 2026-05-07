@@ -74,8 +74,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
       floatingActionButton: _currentIndex == 0 || _currentIndex == 2
           ? FloatingActionButton(
+              heroTag: 'dashboard_fab',
               onPressed: () {
-                Navigator.pushNamed(context, AppRoutes.applicationEntry);
+                if (_currentIndex == 0) {
+                  Navigator.pushNamed(context, AppRoutes.applicationEntry);
+                } else if (_currentIndex == 2) {
+                  Navigator.pushNamed(context, AppRoutes.applicationEntry); // Wait, Tab 2 is Applications list, Tab 1 is Resumes.
+                  // For Tab 2 (Applications), we want to add an Application. For Tab 0 (Dashboard), we also want to add an Application.
+                }
               },
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
